@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Смотреть в ICE</title>
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --surface: #17181b;
+    --outline: #3a3d44;
+    --text: #f2efe9;
+    --muted: #9a9aa2;
+    --accent-a: #5fe1ff;
+    --accent-b: #2e9bf5;
+    --on-accent: #04202e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+  }
+  .poster {
+    width: 170px;
+    aspect-ratio: 2 / 3;
+    margin: 0 auto 18px;
+    border-radius: 12px;
+    background: #23252a;
+    object-fit: cover;
+    display: block;
+  }
+  .poster[hidden] { display: none; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .kind { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+  a.button {
+    display: block;
+    padding: 13px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 10px;
+  }
+  a.primary {
+    background: linear-gradient(180deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+  }
+  a.secondary {
+    background: transparent;
+    border: 1px solid var(--outline);
+    color: var(--text);
+  }
+  .hint { color: var(--muted); font-size: 13px; margin-top: 18px; }
+  .logo {
+    font-weight: 700;
+    letter-spacing: 3px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">I C E</div>
+  <img class="poster" id="poster" alt="" hidden>
+  <h1 id="title">Фильм в ICE</h1>
+  <p class="kind" id="kind"></p>
+
+  <a class="button primary" id="open" href="#">Открыть в ICE</a>
+  <a class="button secondary" id="install"
+     href="https://github.com/zlu4ka2/ice-releases/releases/latest">Скачать ICE</a>
+
+  <p class="hint">
+    ICE — приложение для телефона, планшета и Android&nbsp;TV.
+    Ссылка откроет в нём эту карточку.
+  </p>
+</div>
+
+<script>
+  /*
+   * Страница-прослойка. Ключ TMDB сюда не попадает намеренно: название и постер
+   * приезжают в самой ссылке, которую собрало приложение, поэтому запросов
+   * к API здесь нет вовсе.
+   */
+  var params = new URLSearchParams(location.search);
+  var key = (params.get('i') || '').trim();
+  var title = (params.get('t') || '').trim();
+  var poster = (params.get('p') || '').trim();
+
+  if (title) {
+    document.getElementById('title').textContent = title;
+    document.title = title + ' — смотреть в ICE';
+  }
+  if (/^t\d+$/i.test(key)) {
+    document.getElementById('kind').textContent = 'Сериал';
+  } else if (/^m\d+$/i.test(key)) {
+    document.getElementById('kind').textContent = 'Фильм';
+  }
+
+  if (poster) {
+    var img = document.getElementById('poster');
+    // Зеркало imagetmdb.com — то же, что приложение использует в России:
+    // напрямую image.tmdb.org оттуда отдаёт картинку не всем
+    img.src = 'https://imagetmdb.com/t/p/w342/' + poster.replace(/^\//, '');
+    img.onerror = function () {
+      if (img.dataset.retried) { img.hidden = true; return; }
+      img.dataset.retried = '1';
+      img.src = 'https://image.tmdb.org/t/p/w342/' + poster.replace(/^\//, '');
+    };
+    img.hidden = false;
+  }
+
+  var open = document.getElementById('open');
+  if (/^[mt]\d+$/i.test(key)) {
+    // Своя схема: если ICE стоит, но система ещё не признала ссылку «его»,
+    // этот переход всё равно откроет приложение
+    open.href = 'ice://f/' + key.toLowerCase();
+  } else {
+    open.hidden = true;
+  }
+</script>
+</body>
+</html>

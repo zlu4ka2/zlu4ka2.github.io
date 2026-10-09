@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "dev.cinema.app",
+      "sha256_cert_fingerprints": [
+        "69:F3:6B:DC:E8:27:2C:E3:B8:2E:FA:A9:26:3C:6A:B1:BC:85:A6:3B:9E:39:45:4E:C9:33:61:D3:EE:63:A1:2C"
+      ]
+    }
+  }
+]
