@@ -86,8 +86,8 @@
   <a class="button secondary" id="install"
      href="https://github.com/zlu4ka2/ice-releases/releases/latest">Скачать ICE</a>
 
-  <p class="hint">
-    ICE — приложение для телефона, планшета и Android&nbsp;TV.
+  <p class="hint" id="hint">
+    ICE — приложение для телефона, планшета, Android&nbsp;TV и&nbsp;Windows.
     Ссылка откроет в нём эту карточку.
   </p>
 </div>
@@ -133,6 +133,16 @@
     open.href = 'ice://f/' + key.toLowerCase();
   } else {
     open.hidden = true;
+  }
+
+  // На компьютере — своя сборка: схему ice:// ICE для Windows записывает при первом запуске
+  if (/Windows/i.test(navigator.userAgent) && !/Android/i.test(navigator.userAgent)) {
+    var install = document.getElementById('install');
+    install.href = 'https://github.com/zlu4ka2/ice-releases/releases/tag/windows';
+    install.textContent = 'Скачать ICE для Windows';
+    document.getElementById('hint').textContent =
+      'Если «Открыть в ICE» ничего не открыла — скачайте ICE для Windows, ' +
+      'запустите его один раз, и кнопка заработает.';
   }
 </script>
 </body>
